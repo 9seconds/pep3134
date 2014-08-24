@@ -47,7 +47,7 @@ def raise_from(exc, cause):
     instead. But in most cases it will work as you expect.
     """
 
-    context, context_tb = sys.exc_info()[1:]
+    context_tb = sys.exc_info()[2]
 
     incorrect_cause = not (
         (isinstance(cause, type) and issubclass(cause, Exception)) or
