@@ -7,11 +7,11 @@ from .utils import prepare_raise, construct_exc_class
 
 
 @prepare_raise
-def raise_(tp, value=None, traceback=None):  # pylint: disable=W0613
+def raise_(type_, value=None, traceback=None):  # pylint: disable=W0613
     prev_exc = sys.exc_info()[1]
-    proxy_class = construct_exc_class(type(tp))
+    proxy_class = construct_exc_class(type(type_))
 
-    err = proxy_class(tp)
+    err = proxy_class(type_)
     err.__cause__ = None
     err.__context__ = prev_exc
     err.__suppress_context__ = False

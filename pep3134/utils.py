@@ -18,6 +18,8 @@ def construct_exc_class(cls):
                 return current_tb
 
         def __init__(self, instance):
+            super(ProxyException, self).__init__()
+
             self.__original_exception__ = instance
             self.__fixed_traceback__ = None
 
@@ -32,8 +34,8 @@ def construct_exc_class(cls):
         def __getattr__(self, item):
             return getattr(self.__original_exception__, item)
 
-        def with_traceback(self, tb):
-            self.__fixed_traceback__ = tb
+        def with_traceback(self, traceback):
+            self.__fixed_traceback__ = traceback
 
     ProxyException.__name__ = cls.__name__
 
@@ -42,17 +44,17 @@ def construct_exc_class(cls):
 
 def prepare_raise(func):
     @functools.wraps(func)
-    def decorator(tp, value=None, traceback=None):
-        if value is not None and isinstance(tp, Exception):
+    def decorator(type_, value=None, traceback=None):
+        if value is not None and isinstance(type_, Exception):
             raise TypeError("instance exception may not have a separate value")
 
         if value is None:
-            if isinstance(tp, Exception):
-                error = tp
+            if isinstance(type_, Exception):
+                error = type_
             else:
-                error = tp()
+                error = type_()
         else:
-            error = tp(value)
+            error = type_(value)
         func(error, value, traceback)
 
     return decorator
