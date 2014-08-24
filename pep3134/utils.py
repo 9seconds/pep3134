@@ -7,6 +7,7 @@ import functools
 
 def construct_exc_class(cls):
     class ProxyException(cls):
+        __slots__ = ("__original_exception__", "__fixed_traceback__")
 
         @property
         def __traceback__(self):
