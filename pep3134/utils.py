@@ -6,8 +6,7 @@ import functools
 
 
 def construct_exc_class(cls):
-    class ProxyException(cls):
-        __slots__ = ("__original_exception__", "__fixed_traceback__")
+    class ProxyException(cls, BaseException):
 
         @property
         def __traceback__(self):
@@ -54,6 +53,6 @@ def prepare_raise(func):
                 error = tp()
         else:
             error = tp(value)
-        func(error, traceback)
+        func(error, value, traceback)
 
     return decorator
