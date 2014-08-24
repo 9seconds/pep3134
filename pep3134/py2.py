@@ -3,34 +3,47 @@
 
 import sys
 
-from .utils import prepare_raise
+from .utils import prepare_raise, construct_exc_class
 
 
 @prepare_raise
 def raise_(error, traceback):
-    error.__suppress_context__ = False
-    error.__context__ = sys.exc_info()[1]
-    error.__cause__ = None
-    error.__traceback__ = traceback
+    prev_exc = sys.exc_info()[1]
+    proxy_class = construct_exc_class(type(error))
+
+    err = proxy_class(error)
+    err.__cause__ = None
+    err.__context__ = prev_exc
+    err.__suppress_context__ = False
 
     if traceback:
-        raise error, None, traceback
+        raise err.with_traceback(traceback), None, traceback
     else:
-        raise error
+        raise err
 
 
 def raise_from(exc, cause):
-    error = exc
-    if isinstance(exc, type) and issubclass(exc, Exception):
-        error = exc()
+    context = sys.exc_info()[1]
 
-    error.__context__, error.__traceback__ = sys.exc_info()[1:]
-    error.__suppress_context__ = True
-
-    if isinstance(cause, type) and issubclass(cause, Exception):
-        error.__cause__ = cause()
-    elif cause is None or isinstance(cause, BaseException):
-        error.__cause__ = cause
-    else:
+    incorrect_cause = not (
+        (isinstance(cause, type) and issubclass(cause, Exception)) or
+        cause is None
+        or isinstance(cause, BaseException)
+    )
+    if incorrect_cause:
         raise TypeError("exception causes must derive from BaseException")
-    raise error
+
+    try:
+        raise_(cause)
+    except:
+        cause = sys.exc_info()[1]
+    try:
+        raise_(exc)
+    except:
+        exc = sys.exc_info()[1]
+
+    exc.__context__ = context
+    exc.__suppress_context__ = True
+    exc.__cause__ = cause
+
+    raise exc

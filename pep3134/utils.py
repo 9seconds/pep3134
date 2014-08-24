@@ -1,9 +1,43 @@
 # -*- coding: utf-8 -*-
 
 
-import inspect
+import sys
 import functools
 
+
+def construct_exc_class(cls):
+    class ProxyException(cls):
+
+        @property
+        def __traceback__(self):
+            if self.__fixed_traceback__:
+                return self.__fixed_traceback__
+
+            current_exc, current_tb = sys.exc_info()[1:]
+            if current_exc is self:
+                return current_tb
+
+        def __init__(self, instance):
+            self.__original_exception__ = instance
+            self.__fixed_traceback__ = None
+
+        def __getattribute__(self, item):
+            if item == "__class__":
+                return type(self.__original_exception__)
+            return super(ProxyException, self).__getattribute__(item)
+
+        def __repr__(self):
+            return repr(self.__original_exception__)
+
+        def __getattr__(self, item):
+            return getattr(self.__original_exception__, item)
+
+        def with_traceback(self, tb):
+            self.__fixed_traceback__ = tb
+
+    ProxyException.__name__ = cls.__name__
+
+    return ProxyException
 
 
 def prepare_raise(func):
@@ -22,10 +56,3 @@ def prepare_raise(func):
         func(error, traceback)
 
     return decorator
-
-
-def exec_in_frame_context(code, frame_number=1):
-    frame = inspect.stack()[1][0]
-    locals = frame.f_locals
-    globals = frame.f_globals
-    exec("""exec code in locals, globals""")
