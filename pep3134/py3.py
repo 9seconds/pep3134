@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-import sys
-
 from .utils import prepare_raise
-
-
-def reraise():
-    raise_(*sys.exc_info())
 
 
 @prepare_raise

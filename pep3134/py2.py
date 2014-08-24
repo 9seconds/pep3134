@@ -16,7 +16,7 @@ def raise_(type_, value=None, traceback=None):  # pylint: disable=W0613
     err.__cause__ = None
     err.__suppress_context__ = False
 
-    if getattr(prev_exc, "__proxy_exception__", False):
+    if getattr(prev_exc, "__pep3134__", False):
         prev_exc = prev_exc.with_traceback(prev_tb)
     err.__context__ = prev_exc
 
@@ -27,23 +27,24 @@ def raise_(type_, value=None, traceback=None):  # pylint: disable=W0613
 
 
 def raise_from(exc, cause):
-    context = sys.exc_info()[1]
+    context, context_tb = sys.exc_info()[1:]
 
     incorrect_cause = not (
         (isinstance(cause, type) and issubclass(cause, Exception)) or
+        isinstance(cause, BaseException) or
         cause is None
-        or isinstance(cause, BaseException)
     )
     if incorrect_cause:
         raise TypeError("exception causes must derive from BaseException")
 
-    if not getattr(cause, "__proxy_exception__", False):
-        # noinspection PyBroadException
-        try:
-            raise_(cause)
-        except:  # noqa pylint: disable=W0702
-            cause = sys.exc_info()[1]
-    cause = cause.with_traceback(None)
+    if cause is not None:
+        if not getattr(cause, "__pep3134__", False):
+            # noinspection PyBroadException
+            try:
+                raise_(cause)
+            except:  # noqa pylint: disable=W0702
+                cause = sys.exc_info()[1]
+        cause.__fixed_traceback__ = context_tb
 
     # noinspection PyBroadException
     try:
