@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 
+import copy
 import sys
 import functools
 
 
 def construct_exc_class(cls):
     class ProxyException(cls, BaseException):
+        __proxy_exception__ = True
 
         @property
         def __traceback__(self):
@@ -17,7 +19,7 @@ def construct_exc_class(cls):
             if current_exc is self:
                 return current_tb
 
-        def __init__(self, instance):
+        def __init__(self, instance=None):
             super(ProxyException, self).__init__()
 
             self.__original_exception__ = instance
@@ -35,7 +37,9 @@ def construct_exc_class(cls):
             return getattr(self.__original_exception__, item)
 
         def with_traceback(self, traceback):
-            self.__fixed_traceback__ = traceback
+            instance = copy.copy(self)
+            instance.__fixed__traceback__ = traceback
+            return instance
 
     ProxyException.__name__ = cls.__name__
 
