@@ -34,44 +34,45 @@ def test_simple_raise(input_):
 def test_assert_with_proper_callback():
     try:
         raise TypeError
-    except:
+    except TypeError:
         traceback = sys.exc_info()[2]
 
-    try:
-        raise_(IOError, None, traceback)
-    except IOError:
-        ctype, cexc1, ctb1 = sys.exc_info()
+        try:
+            raise_(IOError, None, traceback)
+            assert False
+        except IOError:
+            ctype, cexc1, ctb1 = sys.exc_info()
 
-        assert ctb1 is not traceback
-        assert isinstance(cexc1, IOError)
-        assert issubclass(ctype, IOError)
-        assert isinstance(cexc1.__context__, TypeError)
-        assert cexc1.__suppress_context__ == False
-        assert cexc1.__traceback__ is traceback
-        assert get_tb(traceback)[0] == get_tb(ctb1)[-1]
+            assert ctb1 is not traceback
+            assert isinstance(cexc1, IOError)
+            assert issubclass(ctype, IOError)
+            assert isinstance(cexc1.__context__, TypeError)
+            assert cexc1.__suppress_context__ == False
 
-    try:
-        raise_(IOError, None, None)
-    except IOError:
-        ctype, cexc2, ctb2 = sys.exc_info()
+            assert get_tb(traceback)[0] == get_tb(ctb1)[-1]
 
-        assert ctb2 is not ctb1
-        assert ctb1 is not traceback
-        assert get_tb(traceback)[0] != get_tb(ctb2)[-1]
-        assert cexc2.__traceback__ is ctb2
-        assert cexc2.__traceback__ is not ctb1
-        assert cexc1.__traceback__ is traceback
+            try:
+                raise_(IOError, None, None)
+                assert False
+            except IOError:
+                ctype, cexc2, ctb2 = sys.exc_info()
 
+                assert ctb2 is not ctb1
+                assert ctb1 is not traceback
+                assert get_tb(traceback)[0] != get_tb(ctb2)[-1]
+                assert cexc2.__traceback__ is ctb2
+                assert cexc2.__traceback__ is not ctb1
 
 @pytest.mark.parametrize("input_, expect_", (
-    ((IOError, None, None), "IOError()"),
-    ((IOError, "OK", None), "IOError('OK',)"),
-    ((IOError("OK"), None), "IOError('OK',)")
+    ((KeyError, None, None), "KeyError()"),
+    ((KeyError, "OK", None), "KeyError('OK',)"),
+    ((KeyError("OK"), None), "KeyError('OK',)")
 ))
 def test_repr(input_, expect_):
     try:
         raise_(*input_)
-    except IOError as exc:
+        assert False
+    except KeyError as exc:
         assert repr(exc) == expect_
 
 
@@ -88,6 +89,7 @@ def test_raise_custom():
 
     try:
         raise_(CustomException())
+        assert False
     except CustomException:
         type_, value_, tb_ = sys.exc_info()
 
@@ -120,6 +122,7 @@ def test_raise_from_fail(input_, cause_):
 def test_raise_from_proxy_exc():
     try:
         raise_(TypeError, "OK")
+        assert False
     except TypeError:
         cause, cause_tb = sys.exc_info()[1:]
 
@@ -128,8 +131,9 @@ def test_raise_from_proxy_exc():
     except IOError:
         exc, exc_tb = sys.exc_info()[1:]
 
+    assert exc.__suppress_context__
+    assert exc.__context__ is None
     assert exc.__cause__ is cause
-    assert exc.__context__ is cause
     assert exc.__traceback__ is exc_tb
     assert exc.__cause__.__traceback__ is cause_tb
 
@@ -142,15 +146,17 @@ def test_raise_from_ordinary_exc():
 
     try:
         raise_from(IOError, cause)
+        assert False
     except IOError:
         exc, exc_tb = sys.exc_info()[1:]
 
-    if sys.version_info[2]:
+    if sys.version_info[0] == 2:
         assert exc.__cause__ is not cause
         assert hasattr(exc.__cause__, "__pep3134__")
     else:
         assert exc.__cause__ is cause
-    assert exc.__context__ is cause
+    assert exc.__suppress_context__
+    assert exc.__context__ is None
     assert exc.__traceback__ is exc_tb
     assert exc.__cause__.__traceback__ is cause_tb
 
@@ -158,24 +164,24 @@ def test_raise_from_ordinary_exc():
 def test_raise_from_none():
     try:
         raise_from(IOError, None)
+        assert False
     except IOError:
         exc, exc_tb = sys.exc_info()[1:]
 
+    assert exc.__suppress_context__
+    assert exc.__context__ is None
     assert exc.__cause__ is None
 
 
 def test_reraise():
     try:
         raise_from(IOError, KeyError)
+        assert False
     except IOError:
-        exc, exc_tb = sys.exc_info()[1:]
+        try:
+            reraise()
+        except IOError:
+            reraised, reraised_tb = sys.exc_info()[1:]
 
-    try:
-        reraise()
-    except IOError:
-        reraised, reraised_tb = sys.exc_info()[1:]
-
-    assert reraised.__cause__ is None
-    assert repr(reraised.__context__) == repr(exc)
-    assert reraised.__context__.__cause__ is exc.__cause__
-    assert reraised.__context__.__traceback__ is exc_tb
+        assert not reraised.__suppress_context__
+        assert reraised.__cause__ is None

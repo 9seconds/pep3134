@@ -52,8 +52,8 @@ def raise_from(exc, cause):
     except:  # noqa pylint: disable=W0702
         exc = sys.exc_info()[1]
 
-    exc.__context__ = context
     exc.__suppress_context__ = True
     exc.__cause__ = cause
+    exc.__context__ = None
 
     raise exc
