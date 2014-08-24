@@ -9,6 +9,16 @@ from .utils import prepare_raise, construct_exc_class
 # noinspection PyUnusedLocal
 @prepare_raise
 def raise_(type_, value=None, traceback=None):  # pylint: disable=W0613
+    """
+    Does the same as ordinary ``raise`` with arguments do in Python 2.
+    But works in Python 3 (>= 3.3) also!
+
+    Please checkout README on https://github.com/9seconds/pep3134
+    to get an idea about possible pitfals. But short story is: please
+    be pretty carefull with tracebacks. If it is possible, use sys.exc_info
+    instead. But in most cases it will work as you expect.
+    """
+
     prev_exc, prev_tb = sys.exc_info()[1:]
     proxy_class = construct_exc_class(type(type_))
 
@@ -27,6 +37,16 @@ def raise_(type_, value=None, traceback=None):  # pylint: disable=W0613
 
 
 def raise_from(exc, cause):
+    """
+    Does the same as ``raise LALALA from BLABLABLA`` does in Python 3.
+    But works in Python 2 also!
+
+    Please checkout README on https://github.com/9seconds/pep3134
+    to get an idea about possible pitfals. But short story is: please
+    be pretty carefull with tracebacks. If it is possible, use sys.exc_info
+    instead. But in most cases it will work as you expect.
+    """
+
     context, context_tb = sys.exc_info()[1:]
 
     incorrect_cause = not (

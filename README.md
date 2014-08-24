@@ -10,3 +10,5 @@ WIP but there are some details:
 * [PEP 415](http://legacy.python.org/dev/peps/pep-0415/)
 
 Python 2.6, 2.7, 3.3, 3.4 (no 3.0 .. 3.2)
+
+Also: _0_ dependencies.

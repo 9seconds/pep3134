@@ -11,6 +11,10 @@ else:
 
 
 def reraise():
+    """
+    Does the same that ``raise`` without arguments do in Python2.
+    But in both Python 2 and Python 3 (>= 3.3).
+    """
     raise_(*sys.exc_info())
 
 

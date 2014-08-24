@@ -7,6 +7,8 @@ import functools
 
 
 def construct_exc_class(cls):
+    """Constructs proxy class for the exception."""
+
     class ProxyException(cls, BaseException):
         __pep3134__ = True
 
@@ -44,6 +46,11 @@ def construct_exc_class(cls):
 
 
 def prepare_raise(func):
+    """
+    Just a short decorator which shrinks
+    full ``raise (E, V, T)`` form into proper ``raise E(V), T``.
+    """
+
     @functools.wraps(func)
     def decorator(type_, value=None, traceback=None):
         if value is not None and isinstance(type_, Exception):
