@@ -23,3 +23,7 @@ after_success:
 notifications:
   email:
     - nineseconds@yandex.ru
+
+matrix:
+  allow_failures:
+    - python: "pypy3"  # it is still 3.2!!!
