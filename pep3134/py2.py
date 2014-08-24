@@ -6,6 +6,7 @@ import sys
 from .utils import prepare_raise, construct_exc_class
 
 
+# noinspection PyUnusedLocal
 @prepare_raise
 def raise_(type_, value=None, traceback=None):  # pylint: disable=W0613
     prev_exc = sys.exc_info()[1]
@@ -33,10 +34,12 @@ def raise_from(exc, cause):
     if incorrect_cause:
         raise TypeError("exception causes must derive from BaseException")
 
+    # noinspection PyBroadException
     try:
         raise_(cause)
     except:  # noqa pylint: disable=W0702
         cause = sys.exc_info()[1]
+    # noinspection PyBroadException
     try:
         raise_(exc)
     except:  # noqa pylint: disable=W0702
