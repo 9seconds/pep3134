@@ -9,8 +9,8 @@ from setuptools.command.test import test
 REQUIREMENTS = []
 
 
-# with open("README.rst", "r") as resource:
-#     LONG_DESCRIPTION = resource.read()
+with open("README.rst", "r") as resource:
+    LONG_DESCRIPTION = resource.read()
 
 
 # copypasted from http://pytest.org/latest/goodpractises.html
