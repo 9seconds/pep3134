@@ -87,37 +87,21 @@ So if we will rewrite given example with PEP3134
 
     import sys
     import pep3134
-
+    
     def example():
+        error = -1
         try:
-            pep3134.raise_KeyError("WOW SUCH ERROR")
+            pep3134.raise_(KeyError("WOW SUCH ERROR"))
         except KeyError as err:
+            error = err
             first = sys.exc_info()
-            assert err.__traceback__ is first[2]
-        
+            assert error.__traceback__ is first[2]
+    
         second = sys.exc_info()
-        assert err.__traceback__ is second[2]  # works in Python2 only
-        return first, second
+        assert error.__traceback__ is not second[2]  # works in Python 2 only
+    
+    example()
 
-See? In Python 3 assert will not work but in Python 2 it will. Anyway, there is the trick. It called
-``with_traceback`` method (added in Python 3 also)
-
-.. code-block:: python
-
-    import sys
-    import pep3134
-
-    def example():
-        try:
-            pep3134.raise_KeyError("WOW SUCH ERROR")
-        except KeyError as err:
-            first = sys.exc_info()
-            assert err.__traceback__ is first[2]
-            err = err.with_traceback(err.__traceback__)
-        
-        second = sys.exc_info()
-        assert err.__traceback__ is second[2]  # works in in both pythons
-        return first, second
 
 This is the only pitfall. Causes, as I mentioned, work well.
 
