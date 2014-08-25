@@ -44,7 +44,7 @@ I did not mentioned ``__traceback__``. This is a reason
 Tracebacks are very convenient data structure to work with but really irritating and magical
 if you want to deal with it using pure Python, without patching code or hacking interpreter 
 internals. If you want to see some magic, please checkout, let's say, 
-``Jinja sources <https://github.com/mitsuhiko/jinja2/blob/master/jinja2/debug.py#L267>`__. Armin is rather
+`Jinja sources <https://github.com/mitsuhiko/jinja2/blob/master/jinja2/debug.py#L267>`__. Armin is rather
 good but I am trying to escape magic if possible.
 
 I cannot keep the same tracebacks to any exceptions even if I want because it requires to do some
