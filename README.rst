@@ -1,6 +1,8 @@
 pep3134
 =======
 
+|Build Status| |Code Coverage| |Static Analysis|
+
 This library is intended to give you an ability to use exception chaining and embedded tracebacks with both
 Python 2 and Python 3 (>= 3.3 only). Exception Chaining and Embedded Tracebacks are also well known as
 PEP3134 that's why I have such geeky name for that library.
@@ -153,3 +155,14 @@ Works in the same way as ``raise`` clause without any arguments does in Python 2
 ----------------------
 
 Works absolutely in the same way as ``raise ... from ...`` clause does in Python 3.
+
+
+
+.. |Build Status| image:: https://travis-ci.org/9seconds/pep3134.svg?branch=master
+    :target: https://travis-ci.org/9seconds/pep3134
+
+.. |Code Coverage| image:: https://coveralls.io/repos/9seconds/pep3134/badge.png?branch=master 
+    :target: https://coveralls.io/r/9seconds/pep3134?branch=master
+
+.. |Static Analysis| image:: https://landscape.io/github/9seconds/pep3134/master/landscape.png
+    :target: https://landscape.io/github/9seconds/pep3134/master
