@@ -21,19 +21,18 @@ def construct_exc_class(cls):
             if current_exc is self:
                 return current_tb
 
-        def __init__(self, instance=None):
-            super(ProxyException, self).__init__()
-
+        def __init__(self, instance=None):  # pylint: disable=W0231
             self.__original_exception__ = instance
             self.__fixed_traceback__ = None
 
-        def __getattribute__(self, item):
-            if item == "__class__":
-                return type(self.__original_exception__)
-            return super(ProxyException, self).__getattribute__(item)
+        def __getattr__(self, item):
+            return getattr(self.__original_exception__, item)
 
         def __repr__(self):
             return repr(self.__original_exception__)
+
+        def __str__(self):
+            return str(self.__original_exception__)
 
         def with_traceback(self, traceback):
             instance = copy.copy(self)
