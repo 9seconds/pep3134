@@ -39,7 +39,7 @@ setup(
     description="Backport of PEP 3134 (with PEP 415 and PEP 409) "
                 "to Python 2 as close as possible",
     long_description="",
-    version="0.1.2",
+    version="0.1.3",
     author="Sergey Arkhipov",
     license="MIT",
     author_email="serge@aerialsounds.org",
