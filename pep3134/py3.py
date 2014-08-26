@@ -4,8 +4,17 @@
 from .utils import prepare_raise
 
 
+# The line number of exec command in raise_from. This is required if we
+# want to put a proper line number into traceback. And we want it.
+# I have no other ideas how to do it in a better way without fetching
+# stackframes using sys or inspect.
+RAISE_FROM_EXEC_LINE = 59
+
 # Precompiled code for raise_from function and exec clause.
-PRECOMPILED_RAISE = compile("raise error from cause", __file__, "exec")
+PRECOMPILED_RAISE = compile(
+    "\n" * (RAISE_FROM_EXEC_LINE - 1) + "raise error from cause",
+    __file__, "exec"
+)
 
 
 # noinspection PyUnusedLocal
