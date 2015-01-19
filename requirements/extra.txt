@@ -1,12 +1,12 @@
 # Extra requirements for PEP3134
 
 # Linting
-prospector==0.5.6
+prospector>=0.5.6
 
 # Running tests in a different environments
-tox==1.7.2
+tox>=1.7.2
 
 # It is always good to have it inside virtualenv
 # to escape this annoying warning on the start
-ipython==2.2.0
-ipdb==0.8
+ipython>=2.2.0
+ipdb>=0.8
