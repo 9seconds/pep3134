@@ -28,4 +28,4 @@ notifications:
 
 matrix:
   allow_failures:
-     - "pypy3"
+    - python: "pypy3"
