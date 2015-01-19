@@ -25,3 +25,7 @@ after_success:
 notifications:
   email:
     - nineseconds@yandex.ru
+
+matrix:
+  allow_failures:
+     - "pypy3"
